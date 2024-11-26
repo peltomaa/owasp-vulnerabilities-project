@@ -1,11 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
-import sqlite3 from "sqlite3";
 import cookieParser from "cookie-parser";
 import fetch from "node-fetch";
 import { createSessionForUsername } from "./session/createSessionForUsername";
-import { getUsernameFromSession } from "./session/getUsernameFromSession";
-import { User } from "./types/User";
+import { getUserFromSession } from "./services/getUserFromSession";
+import { getUsers } from "./services/getUsers";
+import { getUserWithUsernameAndPassword } from "./services/getUserWithUsernameAndPassword";
+import { deleteUser } from "./services/deleteUser";
 
 const app = express();
 const PORT = 3000;
@@ -15,30 +16,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.set("view engine", "ejs");
 
-const db = new sqlite3.Database(":memory:");
-
-db.run(
-  `CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT)`,
-  (err) => {
-    if (err) {
-      console.error("Error creating table:", err.message);
-    } else {
-      console.log("Database and table initialized.");
-
-      db.run(
-        `INSERT INTO users (username, password) VALUES ('admin', 'admin123'), ('user', 'user123')`,
-        (insertErr) => {
-          if (insertErr) {
-            console.error("Error inserting default users:", insertErr.message);
-          } else {
-            console.log("Default users added: admin/admin123, user/user123");
-          }
-        },
-      );
-    }
-  },
-);
-
 app.get("/login", (req, res) => {
   const error = req.query.error;
   res.render("login", {
@@ -46,28 +23,29 @@ app.get("/login", (req, res) => {
   });
 });
 
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await getUserWithUsernameAndPassword(username, password);
 
-  db.get<User>(query, (err, row) => {
-    if (err) {
-      res.redirect(
-        `/login?error=${encodeURIComponent("Unknown error. Try login again.")}`,
-      );
-    } else if (row) {
-      createSessionForUsername(res, row.username);
-      res.redirect("/home");
-    } else {
+    if (!user) {
       res.redirect(
         `/login?error=${encodeURIComponent("Invalid credentials. Try login again.")}`,
       );
+      return;
     }
-  });
+
+    createSessionForUsername(res, user.username);
+    res.redirect("/home");
+  } catch (e) {
+    res.redirect(
+      `/login?error=${encodeURIComponent("Unknown error. Try login again.")}`,
+    );
+  }
 });
 
-app.get("/home", (req, res) => {
-  const session = getUsernameFromSession(req);
+app.get("/home", async (req, res) => {
+  const session = await getUserFromSession(req);
 
   if (!session) {
     res.redirect(
@@ -76,60 +54,48 @@ app.get("/home", (req, res) => {
     return;
   }
 
-  const query = `SELECT * FROM users WHERE username = '${session}'`;
+  console.log(session);
 
-  db.get<User>(query, (_err, row) => {
-    if (row) {
-      res.render("home", {
-        user: row,
-      });
-    } else {
+  res.render("home", {
+    user: session,
+  });
+});
+
+app.get("/admin", async (req, res) => {
+  const sessionUser = await getUserFromSession(req);
+
+  if (!sessionUser) {
+    res.redirect(
+      `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
+    );
+    return;
+  }
+
+  const users = await getUsers();
+
+  res.render("admin", { users });
+});
+
+app.post("/admin/users", async (req, res) => {
+  try {
+    const sessionUser = await getUserFromSession(req);
+
+    if (!sessionUser) {
       res.redirect(
-        `/login?error=${encodeURIComponent("Unkown error. Try login again.")}`,
+        `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
       );
+      return;
     }
-  });
-});
 
-app.get("/admin", (req, res) => {
-  const session = getUsernameFromSession(req);
+    const username = req.body.username;
+    await deleteUser(username);
 
-  if (!session) {
+    res.redirect("/admin");
+  } catch (e) {
     res.redirect(
-      `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
+      `/admin?error=${encodeURIComponent("Unable to remove user. Try again.")}`,
     );
-    return;
   }
-
-  const query = `SELECT * FROM users`;
-
-  db.all<User>(query, (err, rows) => {
-    res.render("admin", { users: rows });
-  });
-});
-
-app.post("/admin/users", (req, res) => {
-  const session = getUsernameFromSession(req);
-
-  if (!session) {
-    res.redirect(
-      `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
-    );
-    return;
-  }
-
-  const username = req.body.username;
-  const query = `DELETE FROM users WHERE username = '${username}'`;
-
-  db.run(query, (err) => {
-    if (err) {
-      res.redirect(
-        `/admin?error=${encodeURIComponent("Unable to remove user. Try again.")}`,
-      );
-    } else {
-      res.redirect("/admin");
-    }
-  });
 });
 
 app.get("/debug", (_req, res) => {
