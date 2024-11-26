@@ -18,7 +18,6 @@ export const getUserWithUsernameAndPassword = async (
         return resolve(undefined);
       }
 
-      console.log(password, res);
       const isMatch = await comparePasswords(password, res.password);
 
       if (!isMatch) {
