@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+  </head>
+  <body >
+    <h1>Login</h1>
+    <% if (error) { %>
+    <p style="color:red"><%- error %></p>
+    <% } %>
+    <form action="/login" method="POST">
+      <input name="username" type="text" />
+      <input name="password" type="password" />
+      <input  type="submit" />
+    </form>
+  </body>
+</html>

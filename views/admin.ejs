@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+  </head>
+  <body >
+    <h1>Admin panel</h1>
+    <p>Welcome to admin panel admin!</p>
+    <h2>All users</h2>
+    <ul>
+        <% users.forEach(user => { %>
+            <li>
+                <strong>Username:</strong> <%= user.username %>
+                <form action="/admin/users" method="POST">
+                  <input type="hidden" name="username" value="<%= user.username %>" />
+                  <button type="submit">Delete user</button>
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+    </body>
+</html>
