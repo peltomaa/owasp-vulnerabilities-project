@@ -1,6 +1,5 @@
-import { Response } from "express";
+import { Request } from "express";
 
-export const createSessionForUsername = (res: Response, username: string) => {
-  const sessionToken = [username, Date.now()].join("-");
-  res.cookie("session", sessionToken);
+export const createSessionForUsername = (req: Request, username: string) => {
+  req.session.username = username;
 };

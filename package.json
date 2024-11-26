@@ -10,6 +10,7 @@
     "@types/body-parser": "^1.19.5",
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
     "@types/node": "^22.10.0",
     "@types/sqlite3": "^3.1.11",
     "tsx": "^4.19.2",
@@ -20,6 +21,7 @@
     "cookie-parser": "^1.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
+    "express-session": "^1.18.1",
     "node-fetch": "^3.3.2",
     "sqlite3": "^5.1.7"
   }

@@ -1,7 +1,7 @@
 import { Request } from "express";
 
 export const getUsernameFromSession = (req: Request): string | undefined => {
-  const sessionCookie = req.cookies?.session;
+  const sessionCookie = req.session.username;
 
   if (!sessionCookie) {
     return;
