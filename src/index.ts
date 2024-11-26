@@ -54,8 +54,6 @@ app.get("/home", async (req, res) => {
     return;
   }
 
-  console.log(session);
-
   res.render("home", {
     user: session,
   });
