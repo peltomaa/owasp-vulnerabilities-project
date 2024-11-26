@@ -7,6 +7,7 @@ import { getUserFromSession } from "./services/getUserFromSession";
 import { getUsers } from "./services/getUsers";
 import { getUserWithUsernameAndPassword } from "./services/getUserWithUsernameAndPassword";
 import { deleteUser } from "./services/deleteUser";
+import { isAdmin } from "./permissions/isAdmin";
 
 const app = express();
 const PORT = 3000;
@@ -48,9 +49,7 @@ app.get("/home", async (req, res) => {
   const session = await getUserFromSession(req);
 
   if (!session) {
-    res.redirect(
-      `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
-    );
+    res.status(404).render("notFound");
     return;
   }
 
@@ -63,9 +62,12 @@ app.get("/admin", async (req, res) => {
   const sessionUser = await getUserFromSession(req);
 
   if (!sessionUser) {
-    res.redirect(
-      `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
-    );
+    res.status(404).render("notFound");
+    return;
+  }
+
+  if (!isAdmin(sessionUser)) {
+    res.status(404).render("notFound");
     return;
   }
 
@@ -79,9 +81,12 @@ app.post("/admin/users", async (req, res) => {
     const sessionUser = await getUserFromSession(req);
 
     if (!sessionUser) {
-      res.redirect(
-        `/login?error=${encodeURIComponent("Session expired. Try login again.")}`,
-      );
+      res.status(404).render("notfound");
+      return;
+    }
+
+    if (!isAdmin(sessionUser)) {
+      res.status(404).render("notfound");
       return;
     }
 
@@ -126,6 +131,10 @@ app.get("/api/image", async (req, res) => {
     console.error(err);
     res.status(500).send("Failed to fetch the image.");
   }
+});
+
+app.all("*", (_req, res) => {
+  res.status(404).render("notFound");
 });
 
 app.listen(PORT, () => {
