@@ -1,3 +1,5 @@
+Please take a look at the project in GitHub: https://github.com/peltomaa/owasp-vulnerabilities-project
+
 This project demonstrates common security flaws outlined in OWASP Top 10 2021, providing practical examples of flaws occurring and how hackers exploit them.
 
 This project code is not production ready in terms of security and best practices. The goal of this example project is to showcase security flaws, not to follow best coding practices. Clean and readable code create foundations for implementing secure code.[1]
