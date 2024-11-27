@@ -55,6 +55,11 @@ See all test here: https://github.com/peltomaa/owasp-vulnerabilities-project/tre
 
 ### FLAW 1 (OWASP A01:2021 - Broken Access Control):
 
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/index.ts#L62
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/index.ts#L77
+
 The first flaw we are going to explore is A01:2021 – Broken Access Control.
 The broken access control flaw is about not enforcing policy, so users are able to act outside their intended permissions.
 They can perform access, modify, destruct or perform business function outside their limits.[2]
@@ -75,6 +80,11 @@ You can see fix here: https://github.com/peltomaa/owasp-vulnerabilities-project/
 
 ### FLAW 2 (OWASP A02:2021 - Cryptographic Failures):
 
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/db/client.ts#L14
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/services/getUserWithUsernameAndPassword.ts#L8
+
 The second flaw involves exploring cryptographic failures. This includes crypting sensitive data in storing and processing, and ensuring up to date cryptographic algorithms or protocols.[3]
 
 In this project in the database in Users table passwords are stored in plain text. If leaked, the data from database would include plain text passwords, allowing access to users account in the system, and even into external service, if they have used the same password there.[3]
@@ -93,6 +103,11 @@ In this project we have forgotten implementing sanitization on HTML templating a
 
 #### XSS injection
 
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/views/login.ejs#L11
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/views/home.ejs#L11
+
 In first exploit we allow hacker to inject any HTML element into DOM including JavaScript. This can cause malicious code be run on attack victim's machine.
 
 There is E2E test written to run exploit here: https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/tests/owasp-a03-2021-injection.spec.ts
@@ -109,6 +124,12 @@ You can see fix here: https://github.com/peltomaa/owasp-vulnerabilities-project/
 
 #### SQL injection
 
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/services/deleteUser.ts#L4
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/services/getUser.ts#L5
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/services/getUserWithUsernameAndPassword.ts#L8
+
 In the second exploit we allow hacker to do SQL injection in our project.
 
 To fix the second problem with SQL injection we will ensure that all variables that we use in SQL queries use the library methods for securely injecting variable into SQL code. In this way we sanitize the input going to the SQL query.
@@ -116,6 +137,11 @@ To fix the second problem with SQL injection we will ensure that all variables t
 You can see fix here: https://github.com/peltomaa/owasp-vulnerabilities-project/pull/5
 
 ### FLAW 4 (OWASP A04:2021 - Insecure Design):
+
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/session/createSessionForUsername.ts
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/session/getUsernameFromSession.ts
 
 The fourth flaw examines insecure design. Insecure design includes all design and architectural decisions that make the web application insecure.[6]
 
@@ -138,6 +164,10 @@ You can see fix here: https://github.com/peltomaa/owasp-vulnerabilities-project/
 
 ### FLAW 5 (OWASP A05:2021 – Security Misconfiguration):
 
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/index.ts#L99
+
 The fifth flaw involves learning about security misconfiguration. Security misconfiguration include misconfiguring cloud provider configuration, using default accounts, misconfiguring or having outdated application framework and libraries.[7]
 
 In this project we have configured a debug endpoint GET /debug to get information about the local setup.
@@ -155,6 +185,10 @@ To fix the problem is we have removed the GET /debug information and replaced it
 You can see fix here: https://github.com/peltomaa/owasp-vulnerabilities-project/pull/7
 
 ### FLAW 6 (OWASP A10:2021 – Server-Side Request Forgery (SSRF)):
+
+Sources:
+
+- https://github.com/peltomaa/owasp-vulnerabilities-project/blob/main/src/index.ts#L113
 
 The sixth flaw explores how we accidentally allow calling any endpoint via our web application to cause a server-side request forgery (SSRF) flaw. The attacker can use this bug to craft a request to an unexpected location, even when protected by firewall or VPN.[8]
 
