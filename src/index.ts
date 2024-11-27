@@ -45,7 +45,9 @@ app.post("/login", async (req, res) => {
       return;
     }
 
+
     createSessionForUsername(req, user.username);
+
     res.redirect("/home");
   } catch (e) {
     res.redirect(
