@@ -96,17 +96,9 @@ app.post("/admin/users", async (req, res) => {
   }
 });
 
-app.get("/debug", (_req, res) => {
+app.get("/health", (_req, res) => {
   res.json({
-    environment: process.env.NODE_ENV || "development",
-    database: "SQLite",
-    debug: true,
-    activeRoutes: app._router.stack
-      .filter((r: any) => r.route)
-      .map(
-        (r: any) =>
-          `${r.route.stack.map((s: any) => s.method.toUpperCase()).join(", ")} ${r.route.path}`,
-      ),
+    success: true,
   });
 });
 
