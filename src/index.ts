@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import fetch from "node-fetch";
+import session from "express-session";
 import { createSessionForUsername } from "./session/createSessionForUsername";
 import { getUserFromSession } from "./services/getUserFromSession";
 import { getUsers } from "./services/getUsers";
@@ -15,6 +16,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.set("view engine", "ejs");
+app.set("trust proxy", 1);
+app.use(
+  session({
+    secret: "use this for now",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  }),
+);
 
 app.get("/login", (req, res) => {
   const error = req.query.error;
@@ -35,7 +45,9 @@ app.post("/login", async (req, res) => {
       return;
     }
 
-    createSessionForUsername(res, user.username);
+
+    createSessionForUsername(req, user.username);
+
     res.redirect("/home");
   } catch (e) {
     res.redirect(
