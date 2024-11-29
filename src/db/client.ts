@@ -11,7 +11,8 @@ db.run(
       console.log("Database and table initialized.");
 
       db.run(
-        `INSERT INTO users (username, password) VALUES ('admin', 'admin123'), ('user', 'user123')`,
+        `INSERT INTO users (username, password) VALUES (?, ?), (?, ?)`,
+        ["admin", "admin123", "user", "user123"],
         (insertErr) => {
           if (insertErr) {
             console.error("Error inserting default users:", insertErr.message);
