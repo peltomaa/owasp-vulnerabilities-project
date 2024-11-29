@@ -111,10 +111,10 @@ app.get("/debug", (_req, res) => {
 });
 
 app.get("/api/image", async (req, res) => {
-  const imgUrl = req.query.url;
-
   try {
-    const response = await fetch(imgUrl as string);
+    const response = await fetch(
+      "https://upload.wikimedia.org/wikipedia/commons/6/6a/Emoji_u1f4a9.svg",
+    );
     const contentType = response.headers.get("content-type");
     const buffer = await response.buffer();
 
